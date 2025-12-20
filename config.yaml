@@ -1,0 +1,54 @@
+# --- Staged Rollout Flags (Phase D/L) ---
+# RUN 1 (Baseline):       use_dropblock: false, use_manifold_mixup: false
+# RUN 2 (Add DropBlock):  use_dropblock: true,  use_manifold_mixup: false
+# RUN 3 (Full Stack):     use_dropblock: true,  use_manifold_mixup: true
+use_dropblock: false
+use_manifold_mixup: false
+
+# --- Paths ---
+data_dir: "/content/drive/MyDrive/Gajar3_split"
+project_dir: "/content/drive/MyDrive/DateFruit_FGVC"
+checkpoint_dir: "/content/drive/MyDrive/DateFruit_FGVC/checkpoints"
+log_dir: "/content/drive/MyDrive/DateFruit_FGVC/logs"
+export_dir: "/content/drive/MyDrive/DateFruit_FGVC/exports"
+
+# --- Model & Data (Phase 0, G, H) ---
+model_name: "tf_efficientnet_b3.ns_jft_in1k"
+input_size: 300
+num_classes: 3
+
+# --- Training (Phase G, D) ---
+physical_batch_size: 16  # Adjust based on T4 memory dry-run
+accumulation_steps: 4    # Target EBS = 16 * 4 = 64
+num_workers: 4
+head_epochs: 5
+total_epochs: 50         # Total for the fine-tuning stage
+warmup_epochs: 3
+
+# --- Hyperparameters (Phase 0, J) ---
+optimizer: "AdamW"
+weight_decay: 1e-4
+label_smoothing: 0.1
+head_lr: 1e-2
+backbone_lr: 1e-4
+min_lr: 1e-6
+focal_loss_gamma: 2.0
+early_stopping_patience: 10
+
+# --- Augmentations (Phase A, B, C) ---
+randaugment_n: 2
+randaugment_m: 9
+gridmask_p: 0.2
+dropblock_block_size: 3
+dropblock_max_prob: 0.1
+manifold_mixup_alpha: 0.2
+manifold_mixup_batch_rate: 0.3
+
+# --- SWA (Phase E) ---
+use_swa: true
+swa_start_epoch: 40 # Start SWA after the main scheduler is mostly done
+# SWA LR, one for each param group (backbone, head)
+swa_lr: 1e-5
+
+# --- Misc ---
+seed: 42
