@@ -1,3 +1,5 @@
+# [![DOI](https://zenodo.org)](https://doi.org/10.5281/zenodo.23404148)
+
 # DateGrade
 **Assigning a grade to date fruits based on external quality features using EfficientNetB3.**
 
